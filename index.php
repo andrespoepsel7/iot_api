@@ -23,19 +23,11 @@
         case "GET":
             $path = explode('/', $_SERVER['REQUEST_URI']);
 
-            // Si el m;etodo Get contiene como argumento las facturas
-            if(isset($path[2]) && $path[2] === 'facturas'){
-                $facturas = obtener_facturas($conn);
+            // Si el método Get contiene como argumento los usuarios
+            if(isset($path[2]) && $path[2] === 'usuarios'){
+                $facturas = obtener_usuarios($conn);
                 echo json_encode($facturas);
-            }else if(isset($path[2]) && $path[2] === 'proyectos'){
-                $proyectos = obtener_proyectos($conn);
-                echo json_encode($proyectos);
-            }else if(isset($path[2]) && $path[2] === 'clientes'){
-                $clientes = obtener_clientes($conn);
-                echo json_encode($clientes);
-            }else if(isset($path[2]) && $path[2] === 'contratos'){
-                $contratos = obtener_contratos($conn);
-                echo json_encode($contratos);
+            // Si existe otro error no se devuelve nada
             }else{
                 echo null;
             } 
@@ -46,6 +38,9 @@
             if(isset($path[2]) && $path[2] === 'autenticar_usuario'){
                 $usuario = autenticar_usuario($conn);
                 echo json_encode($usuario);
+            }else if(isset($path[2]) && $path[2] === 'crear_usuario'){
+                $response = crear_usuario($conn);
+                echo json_encode($response);
             }
             // $response = crear_usuario($conn);
             // echo json_encode($response);

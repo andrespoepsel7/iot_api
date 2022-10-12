@@ -1,37 +1,12 @@
 <?php
+    // Funciones para el CRUD en la base de datos de IOT
     // Función para obtener todos los datos de la base de datos
-    function obtener_facturas($conn){
-        $sql = "SELECT * FROM factura_venta";
+    function obtener_usuarios($conn){
+        $sql = "SELECT * FROM usuarios";
         $stmt = $conn->prepare($sql);
         $stmt->execute();
-        $facturas = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        return $facturas;
-    }
-
-    // Función para obtener los proyectos asignados a una factura
-    function obtener_proyectos($conn){
-        $sql = "SELECT * FROM proyecto";
-        $stmt = $conn->prepare($sql);
-        $stmt->execute();
-        $proyectos = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        return $proyectos;
-    }
-
-    // Función para obtener los proyectos asignados a una factura
-    function obtener_clientes($conn){
-        $sql = "SELECT * FROM cliente";
-        $stmt = $conn->prepare($sql);
-        $stmt->execute();
-        $clientes = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        return $clientes;
-    }
-
-    function obtener_contratos($conn){
-        $sql = "SELECT * FROM registro_contrato_proyecto";
-        $stmt = $conn->prepare($sql);
-        $stmt->execute();
-        $contratos = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        return $contratos;
+        $usuarios = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        return $usuarios;
     }
 
     // Función para autenticar al usuario y ver si tiene los permisos correspondientes para
@@ -39,10 +14,9 @@
     // Códigos de error:
     // -1 Usuario inexistente
     // -2 Clave incorrecta
-    // -3 El usuario existe y puso la contraseña correcta pero no tiene los permisos necearios para ver el sistema
     function autenticar_usuario($conn){
         $user_data = json_decode(file_get_contents('php://input')); 
-        $sql = "SELECT * FROM usuarios WHERE username = :usuario";
+        $sql = "SELECT * FROM usuarios WHERE usuario = :usuario";
         $stmt = $conn->prepare($sql);
         $stmt->bindParam(':usuario', $user_data->usuario);
         $stmt->execute();
@@ -50,21 +24,8 @@
 
         if($usuario){
             // Autenticar al usuario mediante la contraseña
-            if($user_data->clave === $usuario['password']){
-                // Obtener los permisos
-                $id_usuario = $usuario['cod_user'];
-                $sql2 = "SELECT * FROM key_user_menu WHERE id_user = :id_usuario and id_menu IN (87, 110)";
-                $stmt2 = $conn->prepare($sql2);
-                $stmt2->bindParam(':id_usuario', $id_usuario);
-                $stmt2->execute();
-                $permisos = $stmt2->fetchAll(PDO::FETCH_ASSOC);
-                // Si el usuario tiene permiso para acceder se devuelve su información
-                if($permisos){
-                    return $usuario;
-                // El usuario puso los datos correctos pero no tiene permiso para acceder 
-                }else{
-                    return -3;
-                }
+            if($user_data->clave === $usuario['clave']){
+                return $usuario;  
             // El usuario puso la contraseña incorrecta    
             }else{
                 return -2;
@@ -88,11 +49,15 @@
     // Crear usuarios
     function crear_usuario($conn){
         $user = json_decode(file_get_contents('php://input')); 
-        $sql = "INSERT INTO users(id, name, email, mobile) VALUES(null, :name, :email, :mobile)";
+        $sql = "INSERT INTO usuarios(id, nombre, usuario, clave, telefono, carnet, email, fecha_creacion) VALUES(null, :nombre, :usuario, :clave, :telefono, :carnet, :email, :fecha_creacion)";
         $stmt = $conn->prepare($sql);
-        $stmt->bindParam(':name', $user->name);
+        $stmt->bindParam(':nombre', $user->nombre);
+        $stmt->bindParam(':usuario', $user->usuario);
+        $stmt->bindParam(':clave', $user->clave);
+        $stmt->bindParam(':telefono', $user->telefono);
+        $stmt->bindParam(':carnet', $user->carnet);
         $stmt->bindParam(':email', $user->email);
-        $stmt->bindParam(':mobile', $user->mobile);
+        $stmt->bindParam(':fecha_creacion', $user->fecha_creacion);
         if($stmt->execute()){
             $response = ['status'=> 1, 'message'=>'Record created succesfully!'];
         }else{
