@@ -28,22 +28,29 @@
                 $facturas = obtener_usuarios($conn);
                 echo json_encode($facturas);
             // Si existe otro error no se devuelve nada
+            }else if(isset($path[2]) && $path[2] === 'lecturas'){
+                $lecturas = obtener_lecturas($conn);
+                echo json_encode($lecturas);
             }else{
                 echo null;
             } 
             break;
 
         case "POST":
-            $path = explode('/', $_SERVER['REQUEST_URI']);
+            $uri = $_SERVER['REQUEST_URI'];
+            $path = explode('/', $uri);
             if(isset($path[2]) && $path[2] === 'autenticar_usuario'){
                 $usuario = autenticar_usuario($conn);
                 echo json_encode($usuario);
             }else if(isset($path[2]) && $path[2] === 'crear_usuario'){
                 $response = crear_usuario($conn);
                 echo json_encode($response);
+            }else if(isset($path[2]) && $path[2] === 'guardar_datos'){
+                $datos = guardar_datos($conn);
+                echo json_encode($datos);
+            }else{
+                echo null;
             }
-            // $response = crear_usuario($conn);
-            // echo json_encode($response);
             break;
         case "PUT":
             // $response = editar_usuario($conn);

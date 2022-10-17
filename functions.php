@@ -8,7 +8,16 @@
         $usuarios = $stmt->fetchAll(PDO::FETCH_ASSOC);
         return $usuarios;
     }
-    
+
+    // Función para obtener las lecturas de los sensores
+    function obtener_lecturas($conn){
+        $sql = "SELECT * FROM lecturas";
+        $stmt = $conn->prepare($sql);
+        $stmt->execute();
+        $lecturas = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        return $lecturas;
+    }
+
     // Crear usuarios
     function crear_usuario($conn){
         $user = json_decode(file_get_contents('php://input')); 
@@ -64,12 +73,17 @@
         $stmt->bindParam(':temperatura', $datos->temperatura);
         $stmt->bindParam(':humedad', $datos->humedad);
         if($stmt->execute()){
-            $response = ['status'=> 1, 'message'=>'Record created succesfully!'];
+            $response = ['status'=> 1, 'message'=>'Se guardaron los datos correctamente!'];
         }else{
-            $response = ['status'=> 0, 'message'=>'Failed to create Record!'];
+            $response = ['status'=> 0, 'message'=>'No se pudieron giuardar los datos!'];
         }
         return $response;
     }
+    
+
+
+
+
 
 
     // Función para obtener información del usuasrio a editar de la base de datos
