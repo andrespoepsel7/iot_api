@@ -18,6 +18,24 @@
         return $lecturas;
     }
 
+    // Función para obtener solo la ultima fila que indica el estado del LED
+    function obtener_lectura($conn){
+        $sql = "SELECT * FROM lecturas ORDER BY id DESC LIMIT 1";
+        $stmt = $conn->prepare($sql);
+        $stmt->execute();
+        $lectura = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        return $lectura;
+    }
+
+    // Función para obtener solo la ultima fila que indica el estado del LED
+    function obtener_estado($conn){
+        $sql = "SELECT * FROM estados ORDER BY id DESC LIMIT 1";
+        $stmt = $conn->prepare($sql);
+        $stmt->execute();
+        $estado = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        return $estado;
+    }
+
     // Crear usuarios
     function crear_usuario($conn){
         $user = json_decode(file_get_contents('php://input')); 
@@ -67,11 +85,24 @@
     // Funcion para guardar las lecturas en la base de datos en la tabla de lecturas
     function guardar_datos($conn){
         $datos = json_decode(file_get_contents('php://input')); 
-        $sql = "INSERT INTO lecturas(id, fecha_lectura, temperatura, humedad) VALUES(null, :fecha_lectura, :temperatura, :humedad)";
+        $sql = "INSERT INTO lecturas(id, temperatura, humedad) VALUES(null, :temperatura, :humedad)";
         $stmt = $conn->prepare($sql);
-        $stmt->bindParam(':fecha_lectura', $datos->fecha_lectura);
         $stmt->bindParam(':temperatura', $datos->temperatura);
         $stmt->bindParam(':humedad', $datos->humedad);
+        if($stmt->execute()){
+            $response = ['status'=> 1, 'message'=>'Se guardaron los datos correctamente!'];
+        }else{
+            $response = ['status'=> 0, 'message'=>'No se pudieron giuardar los datos!'];
+        }
+        return $response;
+    }
+    
+    // Funcion para guardar los cambios de estado que existan en los actuadores
+    function guardar_estados($conn){
+        $estados = json_decode(file_get_contents('php://input')); 
+        $sql = "INSERT INTO estados(id, estado_led) VALUES(null, :estado_led)";
+        $stmt = $conn->prepare($sql);
+        $stmt->bindParam(':estado_led', $estados->estado_led);
         if($stmt->execute()){
             $response = ['status'=> 1, 'message'=>'Se guardaron los datos correctamente!'];
         }else{
@@ -126,4 +157,44 @@
         }
         return $response;
     }
+
+
+    // Función para calcular el ángulo de inclinación de la linea
+    /*
+        INPUTS: 
+        percentage = el porcentaje
+        x0 = coordenada inicial en eje x
+        y0 = coordenada inicial en eje y
+        l = el largo de la linea
+        a0 = el angulo de corte del semicírculo respecto al eje x
+
+        OUTPUTS 
+        [x1, y1]
+        x1 = coordenada final de la linea en x
+        y1 = coordenada final de la linea en y
+    */
+    // function calcular_coordenadas($percentage, $x0, $y0, $l, $a0){
+        
+    //     $angulo = calcular_angulo($percentage, $a0);
+    //     $xl = round(abs(cos(deg2rad($angulo)))*$l, 0);
+    //     $yl = round(abs(sin(deg2rad($angulo)))*$l, 0);
+    //     if($angulo < 90){
+    //         $x1 = $x0 - $xl;
+    //         $y1 = $y0 - $yl;
+    //     }else if($angulo > 90){
+    //         $x1 = $x0 + $xl;
+    //         $y1 = $y0 + $yl;
+    //     }else{
+    //         $x1 = $x0;
+    //         $y1 = $y0 + $l;
+    //     }
+
+    //     return [$x1, $y1];
+    // }
+
+    // function calcular_angulo($percentage, $angulo_umbral){
+    //     $umbral_disponible =round(180-(2*$angulo_umbral), 0);
+    //     $angulo = round($percentage*($umbral_disponible/100)) + $angulo_umbral;
+    //     return $angulo;
+    // }
 ?>

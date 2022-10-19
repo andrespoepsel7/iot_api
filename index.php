@@ -31,6 +31,12 @@
             }else if(isset($path[2]) && $path[2] === 'lecturas'){
                 $lecturas = obtener_lecturas($conn);
                 echo json_encode($lecturas);
+            }else if(isset($path[2]) && $path[2] === 'lectura'){
+                $lectura = obtener_lectura($conn);
+                echo json_encode($lectura);
+            }else if(isset($path[2]) && $path[2] === 'estado'){
+                $estado = obtener_estado($conn);
+                echo json_encode($estado);
             }else{
                 echo null;
             } 
@@ -48,6 +54,9 @@
             }else if(isset($path[2]) && $path[2] === 'guardar_datos'){
                 $datos = guardar_datos($conn);
                 echo json_encode($datos);
+            }else if(isset($path[2]) && $path[2] === 'guardar_estados'){
+                $estados = guardar_estados($conn);
+                echo json_encode($estados);
             }else{
                 echo null;
             }
