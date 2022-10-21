@@ -6,7 +6,7 @@
     error_reporting(E_ALL);
     ini_set('display_errors', 1);
     // Headers para poder hacer requests
-    header("Access-Control-Allow-Origin: *");
+    header("Access-Control-Allow-Origin: https://www.pepisiot.tk");
     header("Access-Control-Allow-Headers: *");
     header("Access-Control-Allow-Methods: *");
     // Se importa y se crea el objeto para conectar con la base de datos
@@ -62,12 +62,10 @@
             }
             break;
         case "PUT":
-            // $response = editar_usuario($conn);
-            // echo json_encode($response);
+            echo null;
             break;
         case "DELETE":
-            // $response = eliminar_usuario($conn);
-            // echo json_encode($response);
+            echo null;
             break;
     }
 
